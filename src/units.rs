@@ -54,7 +54,10 @@ pub fn parse_number_with_suffix(text: &str) -> Result<(usize, String), &'static 
 pub fn parse_amount(text: &str) -> Result<usize, &'static str> {
     let (amount, suffix) = parse_number_with_suffix(text)?;
 
-    if suffix == KILO || suffix == ""{
+    if suffix == "" {
+        return Ok(amount);
+    }
+    if suffix == KILO {
         return Ok(1_000 * amount);
     }
     if suffix == MEGA {
@@ -109,5 +112,8 @@ mod test {
         assert_eq!(parse_duration("00"), Err("Only strictly positive numbers, please!"));
         assert_eq!(parse_duration("ms"), Err("Number contains no digits"));
         assert_eq!(parse_duration("123xx"), Err("Duration value contains unknown suffix"));
+        assert_eq!(parse_amount("1"), Ok(1));
+        assert_eq!(parse_amount("10"), Ok(10));
+        assert_eq!(parse_amount("1K"), Ok(1000));
     }
 }

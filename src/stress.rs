@@ -49,13 +49,15 @@ fn main() {
         timing_from_dps(options.frequency.unwrap())
     };
 
+    let total_amount = options.total_amount;
     println!("Stressing the receiver with UDP datagrams!");
     println!("Delay between datagrams: {}ns", delay_ns);
     println!("DPS to test: {}", dps);
+    println!("Datagrams to send: {}", total_amount);
 
     let (delay_ns, batch_size) = if delay_ns < 1_000_000 {
         println!("[delays less 1ms are simulated with batching]");
-        let k = (1e6 / delay_ns as f64).ceil() as usize;
+        let k = (total_amount as f64 / delay_ns as f64).ceil() as usize;
         (delay_ns * k, k as usize)
     } else {
         (delay_ns, 1)
@@ -71,7 +73,7 @@ fn main() {
         "see you", "bye"
     ].into_iter().map(|s| bloat_message(s, 420)).collect();
 
-    let batches_amount = options.total_amount / batch_size;
+    let batches_amount = total_amount / batch_size;
     let batches = batches::prepare(samples, batch_size, true)
         .take(batches_amount);
 
