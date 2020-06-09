@@ -51,6 +51,7 @@ pub fn parse_number_with_suffix(text: &str) -> Result<(usize, String), &'static 
     return Err("Number has too many digits");
 }
 
+#[allow(dead_code)]
 pub fn parse_amount(text: &str) -> Result<usize, &'static str> {
     let (amount, suffix) = parse_number_with_suffix(text)?;
 
@@ -75,12 +76,21 @@ pub fn parse_amount(text: &str) -> Result<usize, &'static str> {
     if suffix == EXA {
         return Ok(1_000_000_000_000_000_000 * amount);
     }
-    return Err("Duration value contains unknown suffix");
+    return Err("Amount value contains unknown suffix");
 }
 
 pub fn parse_duration(text: &str) -> Result<usize, &'static str> {
     let (amount, suffix) = parse_number_with_suffix(text)?;
 
+    if suffix == DAYS || suffix == ""{
+        return Ok(86_400_000_000_000 * amount);
+    }
+    if suffix == HOURS || suffix == ""{
+        return Ok(3_600_000_000_000 * amount);
+    }
+    if suffix == MINUTES || suffix == ""{
+        return Ok(60_000_000_000 * amount);
+    }
     if suffix == SECONDS || suffix == ""{
         return Ok(1_000_000_000 * amount);
     }
@@ -115,5 +125,6 @@ mod test {
         assert_eq!(parse_amount("1"), Ok(1));
         assert_eq!(parse_amount("10"), Ok(10));
         assert_eq!(parse_amount("1K"), Ok(1000));
+        assert_eq!(parse_amount("1M"), Ok(1_000_000));
     }
 }

@@ -27,7 +27,7 @@ struct Options {
     #[clap(short, long)]
     frequency: Option<usize>,
     #[clap(short, long)]
-    total_amount: usize
+    total_amount: String
 }
 
 fn main() {
@@ -49,7 +49,7 @@ fn main() {
         timing_from_dps(options.frequency.unwrap())
     };
 
-    let total_amount = options.total_amount;
+    let total_amount = units::parse_amount(&options.total_amount).unwrap();
     println!("Stressing the receiver with UDP datagrams!");
     println!("Delay between datagrams: {}ns", delay_ns);
     println!("DPS to test: {}", dps);
